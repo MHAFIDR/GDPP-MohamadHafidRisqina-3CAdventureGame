@@ -4,6 +4,7 @@ using System;
 public class InputManager : MonoBehaviour
 {
     public Action<Vector2> OnMoveInput;
+    public Action<bool> OnSprintInput;
 
     private void Update()
     {
@@ -33,17 +34,22 @@ public class InputManager : MonoBehaviour
 
     private void CheckSprintInput()
     {
-        bool isHoldSprintInput = Input.GetKey(KeyCode.LeftShift) ||
-                                    Input.GetKey(KeyCode.RightShift);
-            if (isHoldSprintInput)
+        bool isHoldSprintInput = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        if (isHoldSprintInput)
+        {
+            if (OnSprintInput != null)
             {
-                Debug.Log("Sprinting");
-            }
-            else
-            {
-                Debug.Log("Not Sprinting");
+                OnSprintInput(true);
             }
         }
+        else
+        {
+            if (OnSprintInput != null)
+            {
+                OnSprintInput(false);
+            }
+        }
+    }
 
         private void CheckJumpInput()
         {
