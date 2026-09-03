@@ -15,6 +15,15 @@ public class PlayerMovement : MonoBehaviour
     private float _speed;
     [SerializeField]
     private float _rotationSmoothTime = 0.1f;
+    [SerializeField]
+    private float _jumpForce;
+    [SerializeField]
+    private Transform _groundDetector;
+    [SerializeField]
+    private float _detectorRadius;
+    [SerializeField]
+    private LayerMask _groundLayer;
+    private bool _isGrounded;
 
     private void Awake()
     {
@@ -26,12 +35,19 @@ public class PlayerMovement : MonoBehaviour
     {
         _input.OnMoveInput += Move;
         _input.OnSprintInput += Sprint;
+        _input.OnJumpInput += Jump;
+    }
+
+    private void Update()
+    {
+        CheckIsGrounded();
     }
 
     private void OnDestroy()
     {
         _input.OnMoveInput -= Move;
         _input.OnSprintInput -= Sprint;
+        _input.OnJumpInput -= Jump;
     }
 
     private void Move(Vector2 axisDirection)
@@ -62,5 +78,19 @@ public class PlayerMovement : MonoBehaviour
                 _speed = _speed - _walkSprintTransition * Time.deltaTime;
             }
         }
+    }
+
+    private void Jump()
+    {
+        if (_isGrounded)
+        {
+            Vector3 jumpDirection = Vector3.up;
+            _rigidbody.AddForce(jumpDirection * _jumpForce * Time.deltaTime);
+        }
+    }
+
+    private void CheckIsGrounded()
+    {
+        _isGrounded = Physics.CheckSphere(_groundDetector.position, _detectorRadius, _groundLayer);
     }
 }
