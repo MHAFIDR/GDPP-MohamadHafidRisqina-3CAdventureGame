@@ -24,6 +24,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private LayerMask _groundLayer;
     private bool _isGrounded;
+    [SerializeField]
+    private Vector3 _upperStepOffset;
+    [SerializeField]
+    private float _stepCheckerDistance;
+    [SerializeField]
+    private float _stepForce;
 
     private void Awake()
     {
@@ -41,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         CheckIsGrounded();
+        CheckStep();
     }
 
     private void OnDestroy()
@@ -92,5 +99,20 @@ public class PlayerMovement : MonoBehaviour
     private void CheckIsGrounded()
     {
         _isGrounded = Physics.CheckSphere(_groundDetector.position, _detectorRadius, _groundLayer);
+    }
+
+    private void CheckStep()
+    {
+        bool isHitLowerStep = Physics.Raycast(_groundDetector.position,
+                                                transform.forward,
+                                                _stepCheckerDistance);
+        bool isHitUpperStep = Physics.Raycast(_groundDetector.position +
+                                                _upperStepOffset,
+                                                transform.forward,
+                                                _stepCheckerDistance);
+        if (isHitLowerStep && !isHitUpperStep)
+        {
+            _rigidbody.AddForce(0, _stepForce, 0);
+        }
     }
 }
